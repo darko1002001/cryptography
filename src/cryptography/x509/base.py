@@ -427,17 +427,12 @@ class CertificateSigningRequestBuilder(object):
             self._attributes
         )
 
-    def add_attribute(self, object_identifier, value):
+    def add_attribute(self, attribute):
         """
         Adds an X.509 attribute to the certificate request.
         """
-        if not isinstance(object_identifier, ObjectIdentifier):
-            raise TypeError("object_identifier must be an ObjectIdentifier")
-
-        if not isinstance(value, Asn1Value):
-            raise TypeError("value must be an Asn1Value")
-
-        attribute = Attribute(object_identifier, value)
+        if not isinstance(attribute, Attribute):
+            raise TypeError("attribute must be an Attribute")
 
         return CertificateSigningRequestBuilder(
             self._subject_name, self._extensions,

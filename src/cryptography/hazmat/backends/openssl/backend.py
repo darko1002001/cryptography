@@ -782,10 +782,10 @@ class Backend(object):
         for attribute in builder._attributes:
             dotted_string = self._ffi.new(
                 "char[]", attribute.oid.dotted_string.encode('utf8'))
-            value = self._ffi.new("char[]", attribute.value.contents)
+            value = self._ffi.new("char[]", attribute.value.encode('utf8'))
             res = self._lib.X509_REQ_add1_attr_by_txt(
-                x509_req, dotted_string, attribute.value.tag,
-                value, len(value) - 1
+                x509_req, dotted_string,
+                attribute.dotted_string, value, len(value)
             )
             self.openssl_assert(res == 1)
 

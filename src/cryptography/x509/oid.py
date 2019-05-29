@@ -78,6 +78,10 @@ class NameOID(object):
     POSTAL_CODE = ObjectIdentifier("2.5.4.17")
 
 
+class AttributeOID(object):
+    CHALLENGE_PASSWORD = ObjectIdentifier('1.2.840.113549.1.9.7')
+
+
 class SignatureAlgorithmOID(object):
     RSA_WITH_MD5 = ObjectIdentifier("1.2.840.113549.1.1.4")
     RSA_WITH_SHA1 = ObjectIdentifier("1.2.840.113549.1.1.5")

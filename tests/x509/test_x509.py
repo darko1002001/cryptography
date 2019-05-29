@@ -31,8 +31,8 @@ from cryptography.hazmat.primitives.asymmetric.utils import (
 from cryptography.x509.name import _ASN1Type
 from cryptography.x509.oid import (
     AuthorityInformationAccessOID, ExtendedKeyUsageOID, ExtensionOID,
-    NameOID, SignatureAlgorithmOID
-)
+    NameOID, SignatureAlgorithmOID,
+    AttributeOID)
 
 from ..hazmat.primitives.fixtures_dsa import DSA_KEY_2048
 from ..hazmat.primitives.fixtures_ec import EC_KEY_SECP256R1
@@ -3448,6 +3448,16 @@ class TestCertificateSigningRequestBuilder(object):
         )
         assert isinstance(ext.value, x509.OCSPNoCheck)
 
+    def test_build_cert_with_attributes(self, backend):
+        # TODO MAKE THIS WORK
+        private_key = RSA_KEY_2048.private_key(backend)
+        builder = x509.CertificateSigningRequestBuilder()
+        request = builder.subject_name(
+            x509.Name([x509.NameAttribute(NameOID.COUNTRY_NAME, u'US')])
+        ).add_attribute(
+            x509.Attribute(AttributeOID.CHALLENGE_PASSWORD, u'pass')
+        ).sign(private_key, hashes.SHA256(), backend)
+
 
 @pytest.mark.requires_backend_interface(interface=DSABackend)
 @pytest.mark.requires_backend_interface(interface=X509Backend)
@@ -4021,6 +4031,17 @@ class TestRelativeDistinguishedName(object):
         rdn = x509.RelativeDistinguishedName([attr])
         assert rdn.get_attributes_for_oid(oid) == [attr]
         assert rdn.get_attributes_for_oid(x509.ObjectIdentifier('1.2.3')) == []
+
+
+class TestAttribute(object):
+    EXPECTED_TYPES = [
+        (AttributeOID.CHALLENGE_PASSWORD, _ASN1Type.PrintableString)
+    ]
+
+    def test_default_types(self):
+        for oid, asn1_type in TestAttribute.EXPECTED_TYPES:
+            na = x509.Attribute(oid, u"pass")
+            assert na._type == asn1_type
 
 
 class TestObjectIdentifier(object):
